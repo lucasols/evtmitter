@@ -25,6 +25,9 @@ export type Emitter<Events extends Record<EventType, unknown>> = {
   ): OffFn
 
   emit<Type extends keyof Events>(type: Type, arg: Events[Type]): void
+  emit<Type extends keyof Events>(
+    type: undefined extends Events[Type] ? Type : never,
+  ): void
 
   off<Type extends keyof Events>(
     type: Type,
@@ -86,7 +89,7 @@ export function evtmitter<
     return remove
   }
 
-  function emit(_type: keyof Events, payload: any): void {
+  function emit(_type: keyof Events, payload?: any): void {
     const type = _type as EventType
     const handlers = listeners.get(type)
 
