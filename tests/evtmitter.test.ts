@@ -77,6 +77,18 @@ describe('on()', () => {
     emitter.emit('foo', 'bar')
     expect(spy).toHaveBeenCalledTimes(1)
   })
+
+  test('emit without payload', () => {
+    const emitter = evtmitter<{ foo: undefined }>()
+
+    const spy = vi.fn()
+
+    emitter.on('foo', spy)
+
+    emitter.emit('foo')
+
+    expect(spy).toBeCalledWith(undefined)
+  })
 })
 
 describe('off()', () => {
