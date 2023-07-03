@@ -10,13 +10,13 @@ export function useOnEvtmitterEvent<
   E extends Record<string, unknown>,
   T extends keyof E,
 >(
-  evtmitter: Emitter<E>,
+  evtmitter: Emitter<E> | undefined | false,
   eventsType: T,
   handler: (payload: E[T], type: T) => void,
   options?: Options,
 ): void
 export function useOnEvtmitterEvent<E extends Record<string, unknown>>(
-  evtmitter: Emitter<E>,
+  evtmitter: Emitter<E> | undefined | false,
   eventsType: '*',
   handler: MultipleTypesHandler<E>,
   options?: Options,
@@ -25,13 +25,13 @@ export function useOnEvtmitterEvent<
   E extends Record<string, unknown>,
   T extends keyof E,
 >(
-  evtmitter: Emitter<E>,
+  evtmitter: Emitter<E> | undefined | false,
   eventsType: T[],
   handler: MultipleTypesHandler<Pick<E, T>>,
   options?: Options,
 ): void
 export function useOnEvtmitterEvent(
-  evtmitter: Emitter<any>,
+  evtmitter: Emitter<any> | undefined | false,
   eventsType: string | string[],
   handler: (payload: any, type: string) => void,
   { disabled = false }: Options = {},
@@ -43,7 +43,7 @@ export function useOnEvtmitterEvent(
   })
 
   useEffect(() => {
-    if (disabled) return
+    if (disabled || !evtmitter) return
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return evtmitter.on(eventsType as any, stableHandler.current)
