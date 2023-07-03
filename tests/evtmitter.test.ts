@@ -83,11 +83,11 @@ describe('on()', () => {
 
     const spy = vi.fn()
 
-    emitter.on('foo', spy)
+    emitter.on('foo', (payload) => spy(payload))
 
     emitter.emit('foo')
 
-    expect(spy).toBeCalledWith(undefined)
+    expect(spy).toHaveBeenLastCalledWith(undefined)
   })
 })
 
