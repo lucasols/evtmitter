@@ -45,7 +45,9 @@ export function useOnEvtmitterEvent(
   useEffect(() => {
     if (disabled || !evtmitter) return
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    return evtmitter.on(eventsType as any, stableHandler.current)
+    return evtmitter.on(eventsType as any, (payload, type) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      stableHandler.current(payload, type)
+    })
   }, [evtmitter, eventsType, disabled])
 }

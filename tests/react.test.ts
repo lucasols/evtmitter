@@ -93,4 +93,35 @@ describe('useOnEvtmitterEvent()', () => {
     emitter.emit('bar', 123)
     expect(spy).toHaveBeenLastCalledWith(123, 'bar')
   })
+
+  test('event handler scope is updated on rerender', () => {
+    const spy = vi.fn()
+
+    const emitter = evtmitter<{ foo: string }>()
+
+    const { rerender } = renderHook(
+      ({ enabled = false }: { enabled?: boolean } = {}) => {
+        useOnEvtmitterEvent(emitter, 'foo', (payload, type) => {
+          if (enabled) {
+            spy(payload, type)
+          }
+        })
+      },
+    )
+
+    emitter.emit('foo', 'bar')
+
+    expect(spy).not.toBeCalled()
+
+    rerender({ enabled: true })
+
+    emitter.emit('foo', 'bar')
+    expect(spy).toHaveBeenLastCalledWith('bar', 'foo')
+    expect(spy).toHaveBeenCalledTimes(1)
+
+    rerender({ enabled: false })
+
+    emitter.emit('foo', 'bar')
+    expect(spy).toHaveBeenCalledTimes(1)
+  })
 })
