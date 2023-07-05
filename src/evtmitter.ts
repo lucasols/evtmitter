@@ -108,12 +108,17 @@ export function evtmitter<
     }
   }
 
-  function off(type: EventType | EventType[], handler?: InternalHandler) {
+  function off(type: EventType | EventType[] | '*', handler?: InternalHandler) {
     if (Array.isArray(type)) {
       for (const t of type) {
         off(t, handler)
       }
     } else {
+      if (type === '*') {
+        listeners.clear()
+        return
+      }
+
       const handlers = listeners.get(type)
 
       if (handlers) {

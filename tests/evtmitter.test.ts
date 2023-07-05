@@ -120,6 +120,23 @@ describe('off()', () => {
     expect(spy).not.toBeCalled()
     expect(spy2).not.toBeCalled()
   })
+
+  test('off(*) should remove all handlers of all types', () => {
+    const emitter = evtmitter<{ foo: string; bar: number }>()
+
+    const spy = vi.fn()
+    const spy2 = vi.fn()
+
+    emitter.on('foo', spy)
+    emitter.on('bar', spy2)
+    emitter.off('*')
+
+    emitter.emit('foo', 'bar')
+    emitter.emit('bar', 123)
+
+    expect(spy).not.toBeCalled()
+    expect(spy2).not.toBeCalled()
+  })
 })
 
 describe('once()', () => {
