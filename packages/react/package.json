@@ -1,7 +1,7 @@
 {
   "name": "@evtmitter/react",
   "description": "React hooks for evtmitter",
-  "version": "0.3.3",
+  "version": "0.1.0",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -9,6 +9,7 @@
     "build:no-test": "tsup --minify --dts",
     "lint": "tsc && eslint src/ tests/",
     "tsc": "tsc --noEmit",
+    "test": "vitest run",
     "format": "prettier --write src tests"
   },
   "main": "./dist/index.cjs",

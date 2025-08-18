@@ -5,7 +5,7 @@ describe('on()', () => {
   test('should register handler for new type', () => {
     const emitter = evtmitter<{ foo: string }>()
 
-    const spy = vi.fn((payload: string) => {})
+    const spy = vi.fn((payload_: string) => {})
 
     emitter.on('foo', ({ payload }) => spy(payload))
 
@@ -17,8 +17,8 @@ describe('on()', () => {
   test('should append handler for existing type', () => {
     const emitter = evtmitter<{ foo: string }>()
 
-    const spy = vi.fn((payload: string) => {})
-    const spy2 = vi.fn((payload: string) => {})
+    const spy = vi.fn((payload_: string) => {})
+    const spy2 = vi.fn((payload_: string) => {})
 
     emitter.on('foo', ({ payload }) => spy(payload))
     emitter.on('foo', ({ payload }) => spy2(payload))
@@ -47,7 +47,7 @@ describe('on()', () => {
   test('should invoke * handlers', () => {
     const emitter = evtmitter<{ foo: string; bar: number }>()
 
-    const spy = vi.fn()
+    const spy = vi.fn((payload_: string | number, type_: string) => {})
 
     const remove = emitter.on('*', ({ type, payload }) => spy(payload, type))
 
@@ -81,9 +81,9 @@ describe('on()', () => {
   test('emit without payload', () => {
     const emitter = evtmitter<{ foo: undefined }>()
 
-    const spy = vi.fn()
+    const spy = vi.fn((payload_: undefined) => {})
 
-    emitter.on('foo', (payload) => spy(payload))
+    emitter.on('foo', ({ payload }) => spy(payload))
 
     emitter.emit('foo')
 
