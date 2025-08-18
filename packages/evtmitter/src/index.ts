@@ -135,7 +135,7 @@ export function evtmitter<
 }
 
 /** Get a value from a Map(), or insert a new value if it doesn't exist. */
-export function mapGetOrInsert<K, T, F extends T = T>(
+function mapGetOrInsert<K, T, F extends T = T>(
   map: Map<K, T>,
   key: K,
   fallback: () => F,
