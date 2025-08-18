@@ -4,7 +4,7 @@ type OffFn = () => void
 
 export type MultipleTypesHandler<E extends Record<EventType, unknown>> = (
   ...args: {
-    [T in keyof E]: [paylod: E[T], type: T]
+    [T in keyof E]: [payload: E[T], type: T]
   }[keyof E]
 ) => void
 

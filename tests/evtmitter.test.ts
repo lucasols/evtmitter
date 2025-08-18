@@ -49,7 +49,7 @@ describe('on()', () => {
 
     const spy = vi.fn()
 
-    const remove = emitter.on('*', (type, payload) => spy(type, payload))
+    const remove = emitter.on('*', ({ type, payload }) => spy(type, payload))
 
     emitter.emit('foo', 'bar')
     expect(spy).toHaveBeenLastCalledWith('bar', 'foo')
@@ -160,7 +160,7 @@ describe('on/off/once() with multiple types', () => {
 
     const spy = vi.fn()
 
-    emitter.on(['foo', 'bar'], (payload, type) => {
+    emitter.on(['foo', 'bar'], ({ payload, type }) => {
       spy(payload, type)
     })
 
@@ -176,7 +176,7 @@ describe('on/off/once() with multiple types', () => {
 
     const spy = vi.fn()
 
-    emitter.once(['foo', 'bar'], (type, payload) => {
+    emitter.once(['foo', 'bar'], ({ type, payload }) => {
       spy(type, payload)
     })
 
@@ -220,5 +220,41 @@ describe('on/off/once() with multiple types', () => {
     emitter.emit('foo', 'bar')
     emitter.emit('bar', 123)
     expect(spy).toHaveBeenCalledTimes(2)
+  })
+
+  test('should allow on with multiple types with void function', () => {
+    const emitter = evtmitter<{ foo: string; bar: number }>()
+
+    let wasCalled = false
+    emitter.on(['foo', 'bar'], () => {
+      wasCalled = true
+    })
+
+    emitter.emit('foo', 'bar')
+
+    expect(wasCalled).toBe(true)
+
+    let payload: string | number | undefined
+
+    emitter.on(['foo', 'bar'], ({ payload }) => {
+      payload = payload
+    })
+
+    emitter.emit('foo', 'bar')
+
+    expect(payload).toBe('bar')
+
+    let payloadAndType:
+      | { type: 'foo'; payload: string }
+      | { type: 'bar'; payload: number }
+      | undefined
+
+    emitter.on(['foo', 'bar'], (event) => {
+      payloadAndType = event
+    })
+
+    emitter.emit('foo', 'bar')
+
+    expect(payloadAndType).toEqual(['bar', 'foo'])
   })
 })
