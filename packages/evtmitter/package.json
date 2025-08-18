@@ -1,11 +1,11 @@
 {
   "name": "evtmitter",
   "description": "A tiny event emitter for typescript",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "pnpm tsc && pnpm build:no-test",
+    "build": "pnpm tsc && pnpm lint && pnpm test && pnpm build:no-test",
     "build:no-test": "tsup --minify --dts",
     "lint": "tsc && eslint src/ tests/",
     "tsc": "tsc --noEmit",
