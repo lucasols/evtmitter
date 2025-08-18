@@ -5,12 +5,13 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "tsup --minify --dts",
+    "build": "pnpm tsc && pnpm build:no-test",
     "build:no-test": "tsup --minify --dts",
     "lint": "tsc && eslint src/ tests/",
     "tsc": "tsc --noEmit",
     "format": "prettier --write src tests",
-    "test": "vitest run"
+    "test": "vitest run",
+    "pre-publish": "../scripts/check-if-is-sync.sh && pnpm build"
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
