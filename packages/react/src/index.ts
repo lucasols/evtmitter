@@ -1,6 +1,6 @@
 import { Emitter, Handler } from 'evtmitter'
 
-import { useEffect, useInsertionEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef } from 'react'
 
 type Options = {
   disabled?: boolean
@@ -38,13 +38,15 @@ export function useOnEvtmitterEvent(
 ): void {
   const stableHandler = useRef(handler)
 
-  useInsertionEffect(() => {
+  useLayoutEffect(() => {
     stableHandler.current = handler
   })
 
   useEffect(() => {
     if (disabled || !evtmitter) return
 
-    return evtmitter.on(eventsType as any, stableHandler.current)
+    return evtmitter.on(eventsType as any, (event) =>
+      stableHandler.current(event),
+    )
   }, [evtmitter, eventsType, disabled])
 }
