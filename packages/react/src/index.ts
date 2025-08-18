@@ -1,6 +1,6 @@
 import { Emitter, Handler } from 'evtmitter'
 
-import { useEffect, useLayoutEffect, useRef } from 'react'
+import { useEffect, useInsertionEffect, useRef } from 'react'
 
 type Options = {
   disabled?: boolean
@@ -12,7 +12,7 @@ export function useOnEvtmitterEvent<
 >(
   evtmitter: Emitter<E> | undefined | false,
   eventsType: T,
-  handler: (payload: E[T], type: T) => void,
+  handler: Handler<Pick<E, T>>,
   options?: Options,
 ): void
 export function useOnEvtmitterEvent<E extends Record<string, unknown>>(
@@ -33,21 +33,18 @@ export function useOnEvtmitterEvent<
 export function useOnEvtmitterEvent(
   evtmitter: Emitter<any> | undefined | false,
   eventsType: string | string[],
-  handler: (payload: any, type: string) => void,
+  handler: Handler<Record<string, unknown>>,
   { disabled = false }: Options = {},
 ): void {
   const stableHandler = useRef(handler)
 
-  useLayoutEffect(() => {
+  useInsertionEffect(() => {
     stableHandler.current = handler
   })
 
   useEffect(() => {
     if (disabled || !evtmitter) return
 
-    return evtmitter.on(eventsType as any, (payload, type) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      stableHandler.current(payload, type)
-    })
+    return evtmitter.on(eventsType as any, stableHandler.current)
   }, [evtmitter, eventsType, disabled])
 }

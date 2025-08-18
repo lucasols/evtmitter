@@ -12,7 +12,7 @@ describe('useOnEvtmitterEvent()', () => {
     const emitter = evtmitter<{ foo: string }>()
 
     renderHook(() =>
-      useOnEvtmitterEvent(emitter, 'foo', (payload, type) => {
+      useOnEvtmitterEvent(emitter, 'foo', ({ payload, type }) => {
         spy(payload, type)
       }),
     )
@@ -28,7 +28,7 @@ describe('useOnEvtmitterEvent()', () => {
     const emitter = evtmitter<{ foo: string }>()
 
     const { unmount } = renderHook(() =>
-      useOnEvtmitterEvent(emitter, 'foo', (payload, type) => {
+      useOnEvtmitterEvent(emitter, 'foo', ({ payload, type }) => {
         spy(payload, type)
       }),
     )
@@ -50,7 +50,7 @@ describe('useOnEvtmitterEvent()', () => {
         return useOnEvtmitterEvent(
           emitter,
           'foo',
-          (payload, type) => {
+          ({ payload, type }) => {
             spy(payload, type)
           },
           {
@@ -82,7 +82,7 @@ describe('useOnEvtmitterEvent()', () => {
     const emitter = evtmitter<{ foo: string; bar: number }>()
 
     renderHook(() =>
-      useOnEvtmitterEvent(emitter, ['foo', 'bar'], ({payload, type}) => {
+      useOnEvtmitterEvent(emitter, ['foo', 'bar'], ({ payload, type }) => {
         spy(payload, type)
       }),
     )
@@ -101,7 +101,7 @@ describe('useOnEvtmitterEvent()', () => {
 
     const { rerender } = renderHook(
       ({ enabled = false }: { enabled?: boolean } = {}) => {
-        useOnEvtmitterEvent(emitter, 'foo', (payload, type) => {
+        useOnEvtmitterEvent(emitter, 'foo', ({ payload, type }) => {
           if (enabled) {
             spy(payload, type)
           }
