@@ -2,26 +2,21 @@ type EventType = string
 
 type OffFn = () => void
 
-export type MultipleTypesHandler<E extends Record<EventType, unknown>> = (
+export type Handler<E extends Record<EventType, unknown>> = (
   event: {
     [T in keyof E]: { type: T; payload: E[T] }
   }[keyof E],
 ) => void
 
-type Handler<E extends Record<EventType, unknown>, T extends keyof E> = (
-  payload: E[T],
-  type: T,
-) => void
-
 export type Emitter<Events extends Record<EventType, unknown>> = {
-  on(type: '*', handler: MultipleTypesHandler<Events>): OffFn
+  on(type: '*', handler: Handler<Events>): OffFn
   on<Types extends keyof Events>(
     types: Types[],
-    handler: MultipleTypesHandler<Pick<Events, Types>>,
+    handler: Handler<Pick<Events, Types>>,
   ): OffFn
   on<Type extends keyof Events>(
     type: Type,
-    handler: Handler<Events, Type>,
+    handler: Handler<Pick<Events, Type>>,
   ): OffFn
 
   emit<Type extends keyof Events>(type: Type, arg: Events[Type]): void
@@ -31,29 +26,29 @@ export type Emitter<Events extends Record<EventType, unknown>> = {
 
   off<Type extends keyof Events>(
     type: Type,
-    handler?: Handler<Events, Type>,
+    handler?: Handler<Pick<Events, Type>>,
   ): void
   off(type: '*'): void
   off<Types extends keyof Events>(
     types: Types[],
-    handler?: MultipleTypesHandler<Pick<Events, Types>>,
+    handler?: Handler<Pick<Events, Types>>,
   ): void
 
   once<Type extends keyof Events>(
     type: Type,
-    handler: Handler<Events, Type>,
+    handler: Handler<Pick<Events, Type>>,
   ): OffFn
-  once(type: '*', handler: MultipleTypesHandler<Events>): OffFn
+  once(type: '*', handler: Handler<Events>): OffFn
   once<Types extends keyof Events>(
     types: Types[],
-    handler: MultipleTypesHandler<Pick<Events, Types>>,
+    handler: Handler<Pick<Events, Types>>,
   ): OffFn
 }
 
 export function evtmitter<
   Events extends Record<EventType, unknown>,
 >(): Emitter<Events> {
-  type InternalHandler = (payload: any, type: EventType) => void
+  type InternalHandler = (event: { type: EventType; payload: any }) => void
 
   const listeners = new Map<EventType, Set<InternalHandler>>()
 
@@ -81,8 +76,8 @@ export function evtmitter<
     type: EventType | EventType[],
     handler: InternalHandler,
   ): OffFn {
-    const remove = on(type, (payload, evtType) => {
-      handler(payload, evtType)
+    const remove = on(type, (event) => {
+      handler(event)
       remove()
     })
 
@@ -95,7 +90,7 @@ export function evtmitter<
 
     if (handlers) {
       for (const handler of handlers) {
-        handler(payload, type)
+        handler({ type, payload })
       }
     }
 
@@ -103,7 +98,7 @@ export function evtmitter<
 
     if (wildcardHandlers) {
       for (const handler of wildcardHandlers) {
-        handler(payload, type)
+        handler({ type, payload })
       }
     }
   }

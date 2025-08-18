@@ -1,4 +1,4 @@
-import { Emitter, MultipleTypesHandler } from './evtmitter'
+import { Emitter, Handler } from 'evtmitter'
 
 import { useEffect, useLayoutEffect, useRef } from 'react'
 
@@ -18,7 +18,7 @@ export function useOnEvtmitterEvent<
 export function useOnEvtmitterEvent<E extends Record<string, unknown>>(
   evtmitter: Emitter<E> | undefined | false,
   eventsType: '*',
-  handler: MultipleTypesHandler<E>,
+  handler: Handler<E>,
   options?: Options,
 ): void
 export function useOnEvtmitterEvent<
@@ -27,7 +27,7 @@ export function useOnEvtmitterEvent<
 >(
   evtmitter: Emitter<E> | undefined | false,
   eventsType: T[],
-  handler: MultipleTypesHandler<Pick<E, T>>,
+  handler: Handler<Pick<E, T>>,
   options?: Options,
 ): void
 export function useOnEvtmitterEvent(

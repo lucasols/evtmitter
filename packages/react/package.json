@@ -1,0 +1,43 @@
+{
+  "name": "@evtmitter/react",
+  "description": "React hooks for evtmitter",
+  "version": "0.3.3",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "tsup --minify --dts",
+    "build:no-test": "tsup --minify --dts",
+    "lint": "tsc && eslint src/ tests/",
+    "tsc": "tsc --noEmit",
+    "format": "prettier --write src tests"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=14.6.0"
+  },
+  "repository": "github:lucasols/evtmitter",
+  "author": "Lucas Santos",
+  "dependencies": {
+    "evtmitter": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "happy-dom": "^15.11.6",
+    "vitest": "^2.1.6"
+  }
+}

@@ -18,6 +18,11 @@
     "noUncheckedIndexedAccess": true,
     "forceConsistentCasingInFileNames": true,
     "stripInternal": true,
-    "strictPropertyInitialization": true
+    "strictPropertyInitialization": true,
+    "baseUrl": ".",
+    "paths": {
+      "evtmitter": ["packages/evtmitter/src"],
+      "@evtmitter/react": ["packages/react/src"]
+    }
   }
 }

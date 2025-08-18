@@ -1,7 +1,7 @@
 import { cleanup, renderHook } from '@testing-library/react'
+import { evtmitter } from 'evtmitter'
 import { afterEach, describe, expect, test, vi } from 'vitest'
-import { evtmitter } from '../src/evtmitter'
-import { useOnEvtmitterEvent } from '../src/react'
+import { useOnEvtmitterEvent } from '../src/index'
 
 afterEach(() => cleanup())
 
@@ -82,7 +82,7 @@ describe('useOnEvtmitterEvent()', () => {
     const emitter = evtmitter<{ foo: string; bar: number }>()
 
     renderHook(() =>
-      useOnEvtmitterEvent(emitter, ['foo', 'bar'], (payload, type) => {
+      useOnEvtmitterEvent(emitter, ['foo', 'bar'], ({payload, type}) => {
         spy(payload, type)
       }),
     )

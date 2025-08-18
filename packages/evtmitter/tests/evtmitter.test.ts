@@ -1,13 +1,13 @@
 import { describe, expect, test, vi } from 'vitest'
-import { evtmitter } from '../src/evtmitter'
+import { evtmitter } from '../src/index'
 
 describe('on()', () => {
   test('should register handler for new type', () => {
     const emitter = evtmitter<{ foo: string }>()
 
-    const spy = vi.fn()
+    const spy = vi.fn((payload: string) => {})
 
-    emitter.on('foo', (payload) => spy(payload))
+    emitter.on('foo', ({ payload }) => spy(payload))
 
     emitter.emit('foo', 'bar')
 
@@ -17,11 +17,11 @@ describe('on()', () => {
   test('should append handler for existing type', () => {
     const emitter = evtmitter<{ foo: string }>()
 
-    const spy = vi.fn()
-    const spy2 = vi.fn()
+    const spy = vi.fn((payload: string) => {})
+    const spy2 = vi.fn((payload: string) => {})
 
-    emitter.on('foo', (payload) => spy(payload))
-    emitter.on('foo', (payload) => spy2(payload))
+    emitter.on('foo', ({ payload }) => spy(payload))
+    emitter.on('foo', ({ payload }) => spy2(payload))
 
     emitter.emit('foo', 'bar')
 
@@ -49,7 +49,7 @@ describe('on()', () => {
 
     const spy = vi.fn()
 
-    const remove = emitter.on('*', ({ type, payload }) => spy(type, payload))
+    const remove = emitter.on('*', ({ type, payload }) => spy(payload, type))
 
     emitter.emit('foo', 'bar')
     expect(spy).toHaveBeenLastCalledWith('bar', 'foo')
@@ -177,7 +177,7 @@ describe('on/off/once() with multiple types', () => {
     const spy = vi.fn()
 
     emitter.once(['foo', 'bar'], ({ type, payload }) => {
-      spy(type, payload)
+      spy(payload, type)
     })
 
     emitter.emit('foo', 'bar')
@@ -236,8 +236,8 @@ describe('on/off/once() with multiple types', () => {
 
     let payload: string | number | undefined
 
-    emitter.on(['foo', 'bar'], ({ payload }) => {
-      payload = payload
+    emitter.on(['foo', 'bar'], ({ payload: p }) => {
+      payload = p
     })
 
     emitter.emit('foo', 'bar')
@@ -255,6 +255,6 @@ describe('on/off/once() with multiple types', () => {
 
     emitter.emit('foo', 'bar')
 
-    expect(payloadAndType).toEqual(['bar', 'foo'])
+    expect(payloadAndType).toEqual({ type: 'foo', payload: 'bar' })
   })
 })
