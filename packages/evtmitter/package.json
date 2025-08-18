@@ -1,7 +1,7 @@
 {
   "name": "evtmitter",
   "description": "A tiny event emitter for typescript",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -11,7 +11,8 @@
     "tsc": "tsc --noEmit",
     "format": "prettier --write src tests",
     "test": "vitest run",
-    "pre-publish": "../scripts/check-if-is-sync.sh && pnpm build"
+    "pre-publish": "../../scripts/check-if-is-sync.sh && pnpm build",
+    "npm-publish": "pnpm pre-publish && pnpm publish"
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
