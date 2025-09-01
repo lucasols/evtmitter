@@ -12,7 +12,7 @@
     "test": "cd ../evtmitter && pnpm build:no-test && cd ../react && vitest run",
     "format": "prettier --write src tests",
     "pre-publish": "../../scripts/check-if-is-sync.sh && pnpm build",
-    "npm-publish": "pnpm pre-publish && pnpm publish"
+    "npm-publish": "pnpm pre-publish && pnpm publish --access public"
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
