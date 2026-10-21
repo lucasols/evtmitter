@@ -152,6 +152,79 @@ describe('once()', () => {
 
     expect(spy).toHaveBeenCalledTimes(1)
   })
+
+  test('should remove handler even if it throws', () => {
+    const emitter = evtmitter<{ foo: string }>()
+
+    const spy = vi.fn(() => {
+      throw new Error('handler error')
+    })
+
+    emitter.once('foo', spy)
+
+    expect(() => emitter.emit('foo', 'bar')).toThrow('handler error')
+    emitter.emit('foo', 'bar')
+
+    expect(spy).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('emit() with throwing handlers', () => {
+  test('should call the remaining handlers and rethrow the error', () => {
+    const emitter = evtmitter<{ foo: string }>()
+
+    const spy = vi.fn()
+    const wildcardSpy = vi.fn()
+    const error = new Error('handler error')
+
+    emitter.on('foo', () => {
+      throw error
+    })
+    emitter.on('foo', ({ payload }) => {
+      spy(payload)
+    })
+    emitter.on('*', ({ payload }) => {
+      wildcardSpy(payload)
+    })
+
+    expect(() => emitter.emit('foo', 'bar')).toThrow(error)
+
+    expect(spy).toHaveBeenCalledWith('bar')
+    expect(wildcardSpy).toHaveBeenCalledWith('bar')
+  })
+
+  test('should throw an AggregateError if multiple handlers throw', () => {
+    const emitter = evtmitter<{ foo: string }>()
+
+    const spy = vi.fn()
+    const error1 = new Error('handler error 1')
+    const error2 = new Error('handler error 2')
+
+    emitter.on('foo', () => {
+      throw error1
+    })
+    emitter.on('foo', ({ payload }) => {
+      spy(payload)
+    })
+    emitter.on('*', () => {
+      throw error2
+    })
+
+    let thrown: unknown
+
+    try {
+      emitter.emit('foo', 'bar')
+    } catch (e) {
+      thrown = e
+    }
+
+    expect(spy).toHaveBeenCalledWith('bar')
+    expect(thrown).toBeInstanceOf(AggregateError)
+    expect(thrown).toMatchObject({
+      message: '2 handlers threw while emitting "foo"',
+      errors: [error1, error2],
+    })
+  })
 })
 
 describe('on/off/once() with multiple types', () => {

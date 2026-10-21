@@ -77,8 +77,8 @@ export function evtmitter<
     handler: InternalHandler,
   ): OffFn {
     const remove = on(type, (event) => {
-      handler(event)
       remove()
+      handler(event)
     })
 
     return remove
@@ -86,20 +86,32 @@ export function evtmitter<
 
   function emit(_type: keyof Events, payload?: any): void {
     const type = _type as EventType
-    const handlers = listeners.get(type)
+    const errors: unknown[] = []
 
-    if (handlers) {
+    // a throwing handler must not prevent the other handlers from running,
+    // errors are rethrown after all handlers are called
+    function callHandlers(handlers: Set<InternalHandler> | undefined) {
+      if (!handlers) return
+
       for (const handler of handlers) {
-        handler({ type, payload })
+        try {
+          handler({ type, payload })
+        } catch (error) {
+          errors.push(error)
+        }
       }
     }
 
-    const wildcardHandlers = listeners.get('*')
+    callHandlers(listeners.get(type))
+    callHandlers(listeners.get('*'))
 
-    if (wildcardHandlers) {
-      for (const handler of wildcardHandlers) {
-        handler({ type, payload })
-      }
+    if (errors.length === 1) throw errors[0]
+
+    if (errors.length > 1) {
+      throw new AggregateError(
+        errors,
+        `${errors.length} handlers threw while emitting "${type}"`,
+      )
     }
   }
 

@@ -77,7 +77,7 @@ importers:
   packages/react:
     dependencies:
       evtmitter:
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../evtmitter
     devDependencies:
       happy-dom:
