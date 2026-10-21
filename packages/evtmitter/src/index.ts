@@ -28,7 +28,7 @@ export type Emitter<Events extends Record<EventType, unknown>> = {
     type: Type,
     handler?: Handler<Pick<Events, Type>>,
   ): void
-  off(type: '*'): void
+  off(type: '*', handler?: Handler<Events>): void
   off<Types extends keyof Events>(
     types: Types[],
     handler?: Handler<Pick<Events, Types>>,
@@ -121,7 +121,9 @@ export function evtmitter<
         off(t, handler)
       }
     } else {
-      if (type === '*') {
+      // `off('*')` without a handler removes every listener, with a handler
+      // only that wildcard handler is removed
+      if (type === '*' && !handler) {
         listeners.clear()
         return
       }

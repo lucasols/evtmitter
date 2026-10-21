@@ -137,6 +137,44 @@ describe('off()', () => {
     expect(spy).not.toBeCalled()
     expect(spy2).not.toBeCalled()
   })
+
+  test('off(*, handler) should remove only the given wildcard handler', () => {
+    const emitter = evtmitter<{ foo: string }>()
+
+    const typedSpy = vi.fn()
+    const wildcardSpy = vi.fn()
+    const wildcardSpy2 = vi.fn()
+
+    emitter.on('foo', typedSpy)
+    emitter.on('*', wildcardSpy)
+    emitter.on('*', wildcardSpy2)
+    emitter.off('*', wildcardSpy)
+
+    emitter.emit('foo', 'bar')
+
+    expect(wildcardSpy).not.toBeCalled()
+    expect(typedSpy).toHaveBeenCalledTimes(1)
+    expect(wildcardSpy2).toHaveBeenCalledTimes(1)
+  })
+
+  test('the unsubscribe fn of on(*) should remove only its handler', () => {
+    const emitter = evtmitter<{ foo: string }>()
+
+    const typedSpy = vi.fn()
+    const wildcardSpy = vi.fn()
+    const wildcardSpy2 = vi.fn()
+
+    emitter.on('foo', typedSpy)
+    const remove = emitter.on('*', wildcardSpy)
+    emitter.on('*', wildcardSpy2)
+    remove()
+
+    emitter.emit('foo', 'bar')
+
+    expect(wildcardSpy).not.toBeCalled()
+    expect(typedSpy).toHaveBeenCalledTimes(1)
+    expect(wildcardSpy2).toHaveBeenCalledTimes(1)
+  })
 })
 
 describe('once()', () => {
